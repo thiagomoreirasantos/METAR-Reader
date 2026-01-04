@@ -65,7 +65,9 @@ KJFK 041856Z 31015G23KT 10SM FEW045 BKN250 M02/M17 A3042
 ├── Controllers/
 │   └── HomeController.cs       # Handles HTTP requests
 ├── Models/
-│   └── MetarData.cs            # Data models
+│   ├── MetarData.cs            # Parsed METAR data record
+│   ├── CloudLayer.cs           # Cloud layer record
+│   └── WeatherSearchModel.cs   # View model for search
 ├── Services/
 │   ├── IMetarService.cs        # Service interface
 │   ├── MetarService.cs         # API client
@@ -73,8 +75,47 @@ KJFK 041856Z 31015G23KT 10SM FEW045 BKN250 M02/M17 A3042
 ├── Views/
 │   ├── Home/Index.cshtml       # Main page
 │   └── Shared/_Layout.cshtml   # Bootstrap layout
+├── MetarReader.Tests/          # Unit test project
+│   ├── MetarDecoderTests.cs    # Decoder unit tests
+│   └── MetarServiceTests.cs    # Service unit tests
 └── Program.cs                  # Application entry point
 ```
+
+## Testing
+
+The project includes a comprehensive unit test suite with 70 tests.
+
+### Running Tests
+
+```bash
+dotnet test
+```
+
+### Test Coverage
+
+**MetarDecoderTests** - Tests the core METAR parsing logic:
+- Airport code extraction (with METAR/SPECI prefixes)
+- Wind parsing (direction, speed, gusts, variable, calm)
+- Visibility parsing (statute miles, fractions, CAVOK)
+- Weather phenomena decoding (rain, snow, fog, thunderstorm, etc.)
+- Cloud layer parsing (FEW/SCT/BKN/OVC, altitude, multiple layers)
+- Temperature/dew point parsing (positive and negative values)
+- Altimeter reading
+- Human-readable summary generation
+- Cardinal wind direction conversion (N/NE/E/SE/S/SW/W/NW)
+
+**MetarServiceTests** - Tests the HTTP service with mocked dependencies:
+- Input validation (empty, null, whitespace, invalid length)
+- Successful API responses
+- Error handling (network errors, empty responses, server errors)
+- Real-world METAR scenarios
+
+### Test Libraries
+
+- [xUnit](https://xunit.net/) - Test framework
+- [FluentAssertions](https://fluentassertions.com/) - Readable assertions
+- [Moq](https://github.com/moq/moq4) - Mocking framework
+- [AutoFixture](https://github.com/AutoFixture/AutoFixture) - Test data generation
 
 ## Technology Stack
 
